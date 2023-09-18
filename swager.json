@@ -1,0 +1,1101 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "1.0.0",
+    "title": "WaterTraker API docs",
+    "description": "API documentation for GoIT project 'Water Traker'. [Backend github repository](https://github.com/z9877969/water_traker_backend)",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://water-traker-backend.p.goit.global/api/",
+      "variables": {
+        "environment": {
+          "default": "http://localhost:4040/api/",
+          "enum": [
+            "https://water-traker-backend.p.goit.global/api/",
+            "http://localhost:4040/api/"
+          ]
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authorization endpoints"
+    },
+    {
+      "name": "User",
+      "description": "User endpoints"
+    },
+    {
+      "name": "Water",
+      "description": "Water notes and them statistics endpoints"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User registration",
+        "parameters": [],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User login",
+        "parameters": [],
+        "requestBody": {
+          "description": "Login object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "403": {
+            "description": "Email doesn't exist / Password is wrong",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "User logout",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "204": {
+            "description": "Successfull operation",
+            "content": {}
+          },
+          "400": {
+            "description": "No token provided",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Gets new pair of tokens (use Bearer {refreshToken} instead of accessToken)",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "SID object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokensRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokensResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid refresh token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Gets about user info",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/info": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Updates about user info",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User`s data to update. At least one field is required.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/avatar": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Updates user`s avatar",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "New user`s avatar file",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvatarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAvatarResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/water/rate": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Updates user`s water rate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+
+        "requestBody": {
+          "description": "User`s dayly water rate object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWaterRateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateWaterRateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/water/notes": {
+      "post": {
+        "tags": ["Water"],
+        "summary": "Creates user`s water`s note",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User`s drank water by one time object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWaterNoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWaterNoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/water/notes/{id}": {
+      "patch": {
+        "tags": ["Water"],
+        "summary": "Updates user`s water`s note",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Water`s note id. ('_id' field in water`s note's object)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Updates water`s note info. At least one field is required.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWaterNoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateWaterNoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "403": {
+            "description": "No access to data",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session / Water note was not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Water"],
+        "summary": "Remove user`s water`s note",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Water`s note id. ('_id' field in water`s note's object)",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "204": {
+            "description": "Successfull operation",
+            "content": {}
+          },
+          "400": {
+            "description": "No token provided",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "403": {
+            "description": "No access to data",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session / Water note was not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/water/stats/day": {
+      "get": {
+        "tags": ["Water"],
+        "summary": "Gets the user's statistics on the water consumed for the current day",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetStatsWaterNotesByCurrentDayResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Water rate must be greater than zero",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/water/stats/:month": {
+      "get": {
+        "tags": ["Water"],
+        "summary": "Gets the user's statistics on the water consumed for the chosed month",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "month",
+            "description": "Chosed month for statistics period (format YYYY-MM)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfull operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetStatsWaterNotesByChoosedMonthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided / Water rate must be greater than zero / Invalid date format in path",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegistrationRequest": {
+        "required": ["email", "password"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwer1234",
+            "minLength": 8,
+            "maxLength": 64
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "_id": {
+            "type": "string",
+            "description": "User`s id",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": ["email", "password"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwer1234",
+            "minLength": 8,
+            "maxLength": 64
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "User`s id",
+                "example": "507f1f77bcf86cd799439011"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "gender": {
+                "type": "string",
+                "description": "User's gender",
+                "enum": ["mail", "femail"]
+              },
+              "name": {
+                "type": "string",
+                "nullable": true,
+                "description": "User`s name",
+                "maxLength": 32,
+                "example": "Bob or null"
+              },
+              "avatarUrl": {
+                "type": "string",
+                "description": "User`s avatar url",
+                "example": "https://some.url.com/path/to/avatar.jpg or null"
+              },
+              "waterRate": {
+                "type": "integer",
+                "description": "User`s dayly water rate (ml)",
+                "example": 1500,
+                "min": 1,
+                "max": 15000
+              }
+            }
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "Session`s access token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXA"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Session's refresh token (needed for /auth/refresh)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXB"
+          },
+          "sid": {
+            "type": "string",
+            "description": "Session`s id",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      },
+      "RefreshTokensRequest": {
+        "required": ["sid"],
+        "type": "object",
+        "properties": {
+          "sid": {
+            "type": "string",
+            "description": "Session`s id",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      },
+      "RefreshTokensResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "New session`s access token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXA"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "New session's refresh token (needed for /auth/refresh)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXB"
+          },
+          "sid": {
+            "type": "string",
+            "description": "New session`s id",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      },
+      "GetUserInfoResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User`s id",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "gender": {
+            "type": "string",
+            "description": "User's gender",
+            "enum": ["mail", "femail"]
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "User`s name",
+            "maxLength": 32,
+            "example": "Bob or null"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "User`s avatar url",
+            "example": "https://some.url.com/path/to/avatar.jpg or null"
+          },
+          "waterRate": {
+            "type": "integer",
+            "description": "User`s dayly water rate (ml)",
+            "example": 1500,
+            "min": 1,
+            "max": 15000
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "required": [],
+        "type": "object",
+        "properties": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "User's email",
+              "format": "email"
+            },
+            "password": {
+              "type": "string",
+              "description": "User's new password",
+              "example": "qwer1234",
+              "minLength": 8,
+              "maxLength": 64
+            },
+            "oldPassword": {
+              "type": "string",
+              "description": "User's old password",
+              "example": "abcd9876",
+              "minLength": 8,
+              "maxLength": 64
+            },
+            "gender": {
+              "type": "string",
+              "description": "User's gender",
+              "enum": ["mail", "femail"]
+            },
+            "name": {
+              "type": "string",
+              "description": "User`s name",
+              "maxLength": 32,
+              "example": "Bob"
+            }
+          }
+        }
+      },
+      "UpdateUserResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwer1234",
+            "minLength": 8,
+            "maxLength": 64
+          },
+          "gender": {
+            "type": "string",
+            "description": "User's gender",
+            "enum": ["mail", "femail"]
+          },
+          "name": {
+            "type": "string",
+            "description": "User`s name",
+            "maxLength": 32,
+            "example": "Bob"
+          }
+        }
+      },
+      "UpdateAvatarRequest": {
+        "required": ["avatar"],
+        "type": "object",
+        "properties": {
+          "avatar": {
+            "type": "string",
+            "format": "binary",
+            "description": "User's avatar image"
+          }
+        }
+      },
+      "UpdateAvatarResponse": {
+        "type": "object",
+        "properties": {
+          "avatarUrl": {
+            "description": "User`s avatar url",
+            "type": "string"
+          }
+        }
+      },
+      "UpdateWaterRateRequest": {
+        "required": ["waterRate"],
+        "type": "object",
+        "properties": {
+          "waterRate": {
+            "type": "integer",
+            "description": "User`s new water dayli norm (ml)",
+            "min": 1,
+            "max": 15000,
+            "example": 2125
+          }
+        }
+      },
+      "UpdateWaterRateResponse": {
+        "type": "object",
+        "properties": {
+          "waterRate": {
+            "type": "integer",
+            "description": "User`s new water dayli norm (ml)",
+            "min": 1,
+            "max": 15000,
+            "example": 2125
+          }
+        }
+      },
+      "CreateWaterNoteRequest": {
+        "required": ["waterVolume", "date"],
+        "type": "object",
+        "properties": {
+          "waterVolume": {
+            "type": "integer",
+            "description": "Amount of drank water by one time (ml)",
+            "min": 1,
+            "max": 5000,
+            "example": 250
+          },
+          "date": {
+            "type": "string",
+            "description": "Time was drank water portion",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateWaterNoteResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Water`s note id",
+            "example": "506f1f77bcf86cd799439013"
+          },
+          "waterVolume": {
+            "type": "integer",
+            "description": "Amount of drank water by one time (ml)",
+            "min": 1,
+            "max": 5000,
+            "example": 250
+          },
+          "date": {
+            "type": "string",
+            "description": "Time was drank water portion",
+            "format": "date-time"
+          },
+          "owner": {
+            "type": "string",
+            "description": "User`s id",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      },
+      "UpdateWaterNoteRequest": {
+        "type": "object",
+        "properties": {
+          "waterVolume": {
+            "type": "integer",
+            "description": "Amount of drank water by one time (ml)",
+            "min": 1,
+            "max": 5000,
+            "example": 250
+          },
+          "date": {
+            "type": "string",
+            "description": "Time was drank water portion",
+            "format": "date-time"
+          }
+        }
+      },
+      "UpdateWaterNoteResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Water`s note id",
+            "example": "506f1f77bcf86cd799439013"
+          },
+          "waterVolume": {
+            "type": "integer",
+            "description": "Amount of drank water by one time (ml)",
+            "min": 1,
+            "max": 5000,
+            "example": 250
+          },
+          "date": {
+            "type": "string",
+            "description": "Time was drank water portion",
+            "format": "date-time"
+          },
+          "owner": {
+            "type": "string",
+            "description": "User`s id",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      },
+      "RemoveWaterNoteResponse": {
+        "required": [],
+        "type": "object",
+        "properties": {}
+      },
+      "GetStatsWaterNotesByCurrentDayResponse": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "Time was drank water portion",
+            "format": "date-time"
+          },
+          "waterPercentage": {
+            "type": "integer",
+            "description": "The ratio of all water consumed per day to the daily norm of water (%)",
+            "example": 65
+          },
+          "dayliWaterRate": {
+            "type": "number",
+            "description": "User`s new water dayli norm (l)",
+            "example": 1.6
+          },
+          "waterNotes": {
+            "type": "array",
+            "description": "All water`s notes by current day",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Water`s note id",
+                  "example": "506f1f77bcf86cd799439013"
+                },
+                "waterVolume": {
+                  "type": "integer",
+                  "description": "Amount of drank water by one time (ml)",
+                  "min": 1,
+                  "max": 5000,
+                  "example": 250
+                },
+                "date": {
+                  "type": "string",
+                  "description": "Time was drank water portion",
+                  "format": "date-time"
+                },
+                "owner": {
+                  "type": "string",
+                  "description": "User`s id",
+                  "example": "507f1f77bcf86cd799439011"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetStatsWaterNotesByChoosedMonthResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "day": {
+              "type": "string",
+              "description": "Date when was drank water",
+              "format": "date"
+            },
+            "waterPercentage": {
+              "type": "integer",
+              "description": "The ratio of all water consumed per day to the daily norm of water (%)",
+              "example": 65
+            },
+            "dayliWaterRate": {
+              "type": "number",
+              "description": "User`s new water dayli norm (l)",
+              "example": 1.6
+            },
+            "waterServings": {
+              "type": "integer",
+              "description": "Amount of drink water portion by day",
+              "example": 5
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
