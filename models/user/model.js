@@ -17,27 +17,13 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
-      minLength: 8,
-      maxLength: 64,
-    },
-    gender: {
-      type: String,
-      enum: [constants.GENDER.MAIL, constants.GENDER.FEMAIL],
-      default: constants.GENDER.MAIL,
+      minLength: constants.PASSWORD_LENGTH.MIN,
+      maxLength: constants.PASSWORD_LENGTH.MAX,
     },
     avatarUrl: {
       type: String,
       require: true,
       default: null,
-    },
-    waterRate: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    hoursDiff: {
-      type: Number,
-      default: 0,
     },
   },
   {

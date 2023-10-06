@@ -26,12 +26,6 @@ const usersRouterOptions = [
     middlewares: [upload.single("avatar")],
     controller: controllers.updateUserAvatar,
   },
-  {
-    method: "patch",
-    route: "/water/rate",
-    middlewares: [validate.updateWaterRate],
-    controller: controllers.updateWaterRate,
-  },
 ];
 
 module.exports = {

@@ -2,7 +2,6 @@ const Joi = require("joi");
 const mongoose = require("mongoose");
 const {
   userSchema: constants,
-  waterSchema: { WATER_RATE },
   regex: { EMAIL_REGEX },
 } = require("../../constants");
 
@@ -39,16 +38,10 @@ const updateUserInfoValidationSchema = Joi.object({
     .min(constants.PASSWORD_LENGTH.MIN)
     .max(constants.PASSWORD_LENGTH.MAX),
   name: Joi.string().max(constants.MAX_NAME_LENGTH),
-  gender: Joi.string().valid(constants.GENDER.MAIL, constants.GENDER.FEMAIL),
-});
-
-const updateWaterRateValidationSchema = Joi.object({
-  waterRate: Joi.number().min(WATER_RATE.MIN).max(WATER_RATE.MAX).required(),
 });
 
 module.exports = {
   authUser: authUserValidationSchema,
   updateUserInfo: updateUserInfoValidationSchema,
-  updateWaterRate: updateWaterRateValidationSchema,
   refreshTokens: refreshTokensValidationSchema,
 };

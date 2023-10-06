@@ -1,8 +1,8 @@
 const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
+const { AVATAR_DIR_NAME } = require("../envConfigs");
 
-const avatarDir = path.join(__dirname, "../", "public", "avatar");
 const tmpDir = path.join(__dirname, "../", "tmp");
 
 const getFileExtension = (fileName) => fileName.split(".").reverse()[0];
@@ -16,9 +16,8 @@ const clearTmp = async (oldFilePath) => {
   await fs.rm(oldFilePath);
 };
 
-const getAvatarFilePath = (newFileName) => path.join(avatarDir, newFileName);
-
-const getNewAvatarUrl = (newFileName) => path.join("/avatar", newFileName);
+const getCloudinaryAvatarPath = (newFileName) =>
+  path.join(AVATAR_DIR_NAME, newFileName);
 
 const resizeAndReplaceImageFile = async (oldFilePath, newFilePath) => {
   Jimp.read(oldFilePath, (err, avatar) => {
@@ -37,11 +36,10 @@ module.exports = {
   getFileExtension,
   createNewFileName,
   clearTmp,
-  getNewAvatarUrl,
-  getAvatarFilePath,
+  getCloudinaryAvatarPath,
   resizeAndReplaceImageFile,
   dirPath: {
-    avatar: avatarDir,
+    avatar: AVATAR_DIR_NAME,
     tmp: tmpDir,
   },
 };
